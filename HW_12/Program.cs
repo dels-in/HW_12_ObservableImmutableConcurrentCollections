@@ -3,8 +3,8 @@ using System.Collections.Immutable;
 using HW_12;
 
 //ConstCustomer();
-//Librarian();
-JackHouse();
+Librarian();
+//JackHouse();
 
 
 void ConstCustomer()
@@ -92,51 +92,60 @@ void ConstCustomer()
     }
 }
 
-// совсем не работает мой "Библиотекарь". Честно говоря, я про таски плохо понимаю и в этом, видимо, проблема.
-// консоль почему-то не ждет, пока будет введено название и уже после первой буквы выходит из программы :(
 void Librarian()
 {
     var concDict = new ConcurrentDictionary<string, int>();
-
-    Task.Run(() =>
+    var flag = true;
+    
+    //спустя часы тренировок, понял, ято для ожидания именно в таске нужно указывать "async",
+    //а перед "Task.Delay()" - "await". Я рад, что все-таки пришел к правильному ответу)
+    Task.Run(async () =>
     {
-        while (true)
+        while (flag)           
         {
-            Console.WriteLine(
-                "Введите 1 для добавления книги, " +
-                "2 для просмотра списка непрочитанного " +
-                "или 3 для выхода из программы");
-            int.TryParse(Console.ReadLine(), out var number);
-            switch (number)
-            {
-                case 1:
-                    Console.WriteLine("Введите название книги: ");
-                    var name = Console.ReadLine();
-                    concDict.TryAdd(name, 0);
-                    break;
-                case 2:
-                    foreach (var book in concDict)
-                    {
-                        Console.WriteLine(book.Key + " - " + book.Value + "%");
-                    }
-
-                    break;
-                case 3:
-                    return;
-            }
-        }
-    });
-    Task.Run(() =>
-    {
-        while (true)
-        {
+            await Task.Delay(1000);
             foreach (var book in concDict)
             {
-                Task.Delay(1000);
-                concDict.TryUpdate(book.Key, book.Value + 1, book.Value);
+                var currentValue = book.Value;
+                if (book.Value < 100)
+                {
+                    concDict.TryUpdate(book.Key, currentValue + 1, currentValue);
+                }
+                else
+                {
+                    concDict.TryRemove(book.Key, out _);
+                }
             }
         }
     });
+
+    while (flag)
+    {
+        Console.WriteLine(
+            "Введите 1 для добавления книги, " +
+            "2 для просмотра списка непрочитанного " +
+            "или 3 для выхода из программы");
+        int.TryParse(Console.ReadLine(), out var number);
+        switch (number)
+        {
+            case 1:
+                Console.WriteLine("Введите название книги: ");
+                var name = Console.ReadLine();
+                if (name != null) concDict.TryAdd(name, 0);
+                break;
+            case 2:
+                foreach (var book in concDict)
+                {
+                    Console.WriteLine(book.Key + " - " + book.Value + "%");
+                }
+                Console.ReadKey();
+                break;
+            case 3:
+                flag = false;
+                break;
+        }
+    }
+
     Console.ReadKey();
 }
 
@@ -153,10 +162,10 @@ void JackHouse()
     var part7 = new Part7(part6.AddPart(part6.Poem));
     var part8 = new Part8(part7.AddPart(part7.Poem));
     var part9 = new Part9(part8.AddPart(part8.Poem));
-                                                
-    foreach (var str in part9.AddPart(part9.Poem))       
-    {                                            
-        Console.WriteLine(str);                  
+
+    foreach (var str in part9.AddPart(part9.Poem))
+    {
+        Console.WriteLine(str);
     }
     //Console.WriteLine(part1.AddPart(part1.Poem));
 }
