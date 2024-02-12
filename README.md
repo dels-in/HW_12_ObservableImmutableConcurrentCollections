@@ -3,9 +3,9 @@
 Цель:
 Тренируемые навыки: работа с
 <ul>
-<li>ObservableCollection</li>
-<li>Immutable коллекциями</li>
-<li>ConcurrentDictionary</li>
+<li>Observable Collection</li>
+<li>Immutable Collection</li>
+<li>Concurrent Dictionary</li>
 </ul>
 
 Описание/Пошаговая инструкция выполнения домашнего задания:
